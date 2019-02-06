@@ -10,7 +10,7 @@
             </router-link>
             <router-link to="orderHistory" style="position:absolute;width:33%;height:30%;top:35%;left:17%">
             </router-link>
-            <router-link to="favorite" style="position:absolute;width:33%;height:30%;top:35%;left:51%">
+            <router-link to="refund" style="position:absolute;width:33%;height:30%;top:35%;left:51%">
             </router-link>
             <router-link to="refundHistory" style="position:absolute;width:33%;height:30%;top:65.5%;">
             </router-link>

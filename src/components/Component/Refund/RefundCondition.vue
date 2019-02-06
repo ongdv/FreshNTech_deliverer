@@ -4,15 +4,12 @@
                 <b-list-group class="border-0">
                     <b-list-group-item class="border-0 bg-light">
                             <div style="font-size: 1.1em;font-weight:bold;text-align:center;width:100%" v-on:change="filterHistory()">
-                                <select class="form-control" style="width:45%;display:inline-block;" v-model="historyDate">
-                                    <option value="7">지난 7일</option>
-                                    <option value="30">지난 30일</option>
-                                    <option value="365">지난 1년</option>
-                                </select>
-                                <select class="form-control" style="width:45%;display:inline-block;" v-model="condition">
+                                <select class="form-control" style="width:90%;display:inline-block;text-align:center;" v-model="historyDate">
                                     <option value="전체">전체</option>
-                                    <option value="반품대기">반품대기</option>
-                                    <option value="반품완료">반품완료</option>
+                                    <template v-for="(item, index) in dateList">
+                                        <option :value="item" v-bind:key="index">{{item}}</option>
+                                    </template>
+                                    
                                 </select>
                             </div>
                     </b-list-group-item>
@@ -22,33 +19,40 @@
 </template>
 
 <script>
-    var baseurl = "http://freshntech.cafe24.com"
+    var baseurl = "http://freshntech.cafe24.com";
+    var d= new Date();
     export default {
-        name: 'RefundHistoryCondition',
+        name: 'RefundCondition',
         data() {
             return {
-                historyDate: '7',
-                condition: '전체',
+                historyDate: "전체",
+                dateList: []
             }
         },
         methods: {
             getHistory(){
-                this.$http.get(baseurl + '/order/getDelivererRefund/' + this.store.state.customer.id + '?condition=' + this.historyDate)
+                this.$http.get(baseurl + '/order/getDelivererOrder/' + this.store.state.customer.id + "?condition=9999")
                 .then((res) => {
                     console.log(res);
                     var list = [];
-                    if(this.condition === "전체"){
-                        this.store.state.requestHistory = res.data;
-                        this.$forceUpdate();
-                        return;
+                    var date = [];
+                    for(var i=0; i<res.data.length; i++){
+                        date.push(res.data[i].orderdate)
+                    }
+                    this.dateList = [...new Set(date)];
+                    if(this.historyDate === '전체'){
+                        list = res.data.filter((item) => {
+                            return item.orderstate === "배송완료";
+                        });
                     }else{
                         for(var i=0; i<res.data.length; i++){
                             list = res.data.filter((item) => {
-                                return item.orderstate === this.condition;
+                                return item.orderdate === this.historyDate;
                             });
                         }
                     }
-                    this.store.state.requestHistory = list;
+                    
+                    this.store.state.orderHistory = list;
                     this.$forceUpdate();
                 })
                 .catch((err) => {

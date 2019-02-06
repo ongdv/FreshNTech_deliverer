@@ -30,8 +30,10 @@
                 .then((res) => {
                     console.log(res);
                     if(res.data.customer.isAuth){
-                        this.store.state.customer = this.customer(res.data.customer);
-                        this.store.state.delivererNotice = this.delivererNotice(res.data.delivererNotice);
+                        this.store.state.customer = res.data.customer;
+                        this.store.state.delivererNotice = res.data.delivererNotice;
+                        // this.store.state.customer = this.customer(res.data.customer);
+                        // this.store.state.delivererNotice = this.delivererNotice(res.data.delivererNotice);
                     }else{
                         console.log('X');
                         return;
@@ -43,26 +45,27 @@
                 .catch((err) => {
                     console.log(err);
                 })
-            },
-            b64DecodeUnicode(str) {
-                return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-                }).join(''))
-            },
-            delivererNotice (str) {
-                for(var i =0; i < str.length; i++){
-                        str[i].id = this.b64DecodeUnicode(str[i].id);
-                        str[i].title = this.b64DecodeUnicode(str[i].title);
-                        str[i].regDate = this.b64DecodeUnicode(str[i].regDate);
-                    }
-                return str;
-            },
-            customer (str) {
-                str.bname = this.b64DecodeUnicode(str.bname);
-                str.id = this.b64DecodeUnicode(str.id);
-                str.userid = this.b64DecodeUnicode(str.userid);
-                return str;
-            },
+            }
+            // ,
+            // b64DecodeUnicode(str) {
+            //     return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+            //         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            //     }).join(''))
+            // },
+            // delivererNotice (str) {
+            //     for(var i =0; i < str.length; i++){
+            //             str[i].id = this.b64DecodeUnicode(str[i].id);
+            //             str[i].title = this.b64DecodeUnicode(str[i].title);
+            //             str[i].regDate = this.b64DecodeUnicode(str[i].regDate);
+            //         }
+            //     return str;
+            // },
+            // customer (str) {
+            //     str.bname = this.b64DecodeUnicode(str.bname);
+            //     str.id = this.b64DecodeUnicode(str.id);
+            //     str.userid = this.b64DecodeUnicode(str.userid);
+            //     return str;
+            // },
         }
     }
 </script>

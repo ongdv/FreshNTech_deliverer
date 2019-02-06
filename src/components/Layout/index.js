@@ -9,6 +9,23 @@ import Auth from './Auth.vue';
 import AddGoods from './AddGoods.vue';
 import AddFavorite from './AddFavorite';
 import TodayDelivery from './TodayDelivery';
-import TotalHistory from './TotalHistory'
+import TotalHistory from './TotalHistory';
+import MapView from './MapView';
+import Refund from './Refund';
 
-export  { Main, Order, OrderHistory, RefundHistory, Statistics, Setting, Favorite, Auth, AddGoods, AddFavorite, TodayDelivery, TotalHistory };
+export  {
+    Main,
+    Order,
+    OrderHistory,
+    RefundHistory,
+    Statistics,
+    Setting,
+    Favorite,
+    Auth,
+    AddGoods,
+    AddFavorite,
+    TodayDelivery,
+    TotalHistory,
+    MapView,
+    Refund
+};

@@ -7,7 +7,7 @@
                         
                         v-on:click="getDetail(item.id)">
                             <div style="width:75%;height:100%;float:left;text-align:left;">
-                                {{item.orderdate}}
+                                {{item.orderdate}} <span style="font-weight:bold">{{item.customerBname}}</span>
                                 <br>
                                 <span style="width:65%;color:rgba(190,190,190,0.7);">주문금액 {{nwc(item.amount)}} 원</span>
                             </div>
@@ -15,7 +15,7 @@
                                 <span style="font-weight:bold;" v-bind:style="{ color: styleColor(item.orderstate)}">{{item.orderstate}}</span>
                             </div>
                         </b-btn>
-                        <b-modal :id="`modal${index}`" :title="'배송상세보기'"
+                        <b-modal :id="`modal${index}`" :title="'배송내역상세보기'"
                                  :ok-only="true"
                                  :ok-title="'닫기'"
                                  :modal-ok="true"
@@ -26,7 +26,7 @@
                             <div class="w-100 bg-light" style="margin-top:10px;">
                                 <b-list-group class="border-0">
                                     <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
-                                        {{item.orderdate}}<br>
+                                        {{item.orderdate}} <span style="font-weight:bold">{{item.customerBname}}</span><br>
                                         {{item.id}}
                                     </b-list-group-item>
                                     <b-list-group-item v-for="(detailItem, index) in orderDetail" v-bind:key="index">
@@ -40,19 +40,14 @@
                                            <div style="width:5%;height:100%;float:left;font-weight:bold;">
                                                {{detailItem.orderitem.qty}}
                                            </div>
-                                           <div style="width:35%;float:right;height:100%;text-align:right;">
-                                               {{nwc(detailItem.orderitem.price)}} 원<br>
-                                               <span style="font-weight:bold;">{{nwc(detailItem.orderitem.amount)}} 원</span>
+                                           <div style="width:20%;height:100%;float:right;font-weight:bold;color:green;" >
+                                               {{detailItem.orderitem.state}}
                                            </div>
                                     </b-list-group-item>
                                     <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
                                         <div class="w-100">
                                             <span style="width:65%;float:left;font-weight:bold;">총 주문수량</span>
                                             <span style="float:right;font-weight:bold;">{{nwc(detailQty)}} 개</span>
-                                        </div>
-                                        <div class="w-100">
-                                            <span style="width:65%;float:left;font-weight:bold;">총 상품금액</span>
-                                            <span style="float:right;font-weight:bold;font-size:1.2em;">{{nwc(detailTotal)}} 원</span>
                                         </div>
                                     </b-list-group-item>
                                 </b-list-group>    

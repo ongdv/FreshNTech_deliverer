@@ -30,9 +30,10 @@
                 .then((res) => {
                     console.log(res);
                     var list = [];
+                    
                     for(var i=0; i<res.data.length; i++){
                         list = res.data.filter((item) => {
-                            return item.orderstate === "배송준비" || item.orderstate === "배송완료"|| item.orderstate === "배송중";
+                            return  item.orderstate === "주문접수"||item.orderstate === "배송준비" || item.orderstate === "배송완료"|| item.orderstate === "배송중" || item.orderstate === "배송보류";
                         });
                     }
                     this.store.state.orderHistory = list;
@@ -45,9 +46,59 @@
             },
             filterHistory() {
                 this.getHistory();
+            },
+            changeState() {
+                var list =[];
+                var detail= [];
+                var state = "";
+                var test = [];
+                var postData = {};
+                var id = "";
+                this.$http.get(baseurl + '/order/getDelivererOrder/' + this.store.state.customer.id + '?condition=' + this.historyDate)
+                .then((res) => {
+                    list = res.data;
+                    console.log(list);
+                    for(var i=0; i < list.length; i++){
+                        console.log(list[i]);
+                        if(list[i].orderstate === "배송준비" || list[i].orderstate === "주문접수"){
+                            state = "배송중";
+                        }else{
+                            state = list[i].orderstate;
+                        }
+                        id = list[i];
+                        this.$http.get(baseurl + '/orderdetail/' + list[i].id)
+                        .then((res) => {
+                            detail = res.data;
+                            for(var j=0; j < detail.length; j++){
+                              if(detail[j].orderitem.state === "배송준비" || detail[j].orderitem.state === "주문접수"){
+                                  console.log(j);
+                                  test.push({orderItemId: detail[j].orderitem.id, orderItemState: "배송중"})
+                              }
+                            }
+                            postData = {
+                                orderItemList: test,
+                                orderId: id,
+                                orderState: state
+                            }
+                        })
+                        .then(() => {
+                            console.log(postData);
+                            this.$http.put(baseurl + '/orderdetail', postData)
+                            .then((res) => {
+                                console.log(res);
+                                test = [];
+                                postData = {};
+                                state=""
+                            })
+                        })
+                        
+                    }
+                })
             }
         },
+        
         created() {
+            this.changeState();
             this.getHistory();
         },
     }

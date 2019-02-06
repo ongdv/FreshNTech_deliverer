@@ -7,7 +7,7 @@
                         
                         v-on:click="getDetail(item.id)">
                             <div style="width:75%;height:100%;float:left;text-align:left;">
-                                {{item.orderdate}}
+                                {{item.orderdate}} <span style="font-weight:bold">{{item.customerBname}}</span>
                                 <br>
                                 <span style="width:65%;color:rgba(190,190,190,0.7);">주문금액 {{nwc(item.amount)}} 원</span>
                             </div>
@@ -26,10 +26,14 @@
                             <div class="w-100 bg-light" style="margin-top:10px;">
                                 <b-list-group class="border-0">
                                     <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
-                                        {{item.orderdate}}<br>
+                                        {{item.orderdate}}  <span style="font-weight:bold">{{item.customerBname}}</span><br>
                                         {{item.id}}
                                     </b-list-group-item>
                                     <b-list-group-item v-for="(detailItem, index) in orderDetail" v-bind:key="index">
+                                        <div style="width:10%;float:left;height:100%;text-align:left;">
+                                               <b-form-checkbox v-model="detailItem.check" @change="addList(index);">
+                                                </b-form-checkbox>     
+                                           </div>
                                            <div style="width:60%;height:100%;float:left;">
                                                <span style="font-weight:bold;">[{{detailItem.item.manufacturer}}] {{detailItem.item.itemName}}</span><br>
                                                <span style="font-size:0.9em;color:rgba(190,190,190,0.7);">
@@ -40,15 +44,23 @@
                                            <div style="width:5%;height:100%;float:left;font-weight:bold;">
                                                {{detailItem.orderitem.qty}}
                                            </div>
-
                                            <div style="width:20%;height:100%;float:right;font-weight:bold;color:green;" >
                                                {{detailItem.orderitem.state}}
                                            </div>
                                     </b-list-group-item>
                                     <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
                                         <div class="w-100">
-                                            <span style="width:65%;float:left;font-weight:bold;">총 주문수량</span>
+                                            <span style="width:65%;float:left;font-weight:bold;">총 배송수량</span>
                                             <span style="float:right;font-weight:bold;">{{nwc(detailQty)}} 개</span>
+                                        </div>
+                                        <div class="w-100">
+                                            <span style="width:65%;float:left;font-weight:bold;">총 반품수량</span>
+                                            <span style="float:right;font-weight:bold;">{{nwc(calRefundTotal())}} 개</span>
+                                        </div>
+                                    </b-list-group-item>
+                                    <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
+                                        <div class="w-100 text-center">
+                                            <b-button class="btn border-0 w-100" style="background:rgb(31, 161, 133);" @click="reqSuccess(item.id)">반품하기</b-button>
                                         </div>
                                     </b-list-group-item>
                                 </b-list-group>    
@@ -63,7 +75,7 @@
 <script>
     var baseurl="http://freshntech.cafe24.com";
     export default {
-        name: 'OrderHistoryList',
+        name: 'RefundHistoryList',
         data () {
             return {
                 orderDetail: '',
@@ -114,32 +126,61 @@
                     this.detailTotal=0;
                     this.detailQty=0;
                     for(var i=0; i<this.orderDetail.length; i++){
-                        this.detailTotal+=Number(this.orderDetail[i].orderitem.amount);
                         this.detailQty+=Number(this.orderDetail[i].orderitem.qty);
+                        this.orderDetail.check = false;
                     }
-                    
+                    console.log(this.orderDetail);
                 })
                 .catch((err) => {
                     console.log(err);
                 })
             },
-            cancelOrder(id){
-                var a = confirm('주문을 정말 취소하시겠습니까?');
-                if(a == 1){
-                    this.$http.put(baseurl + '/order/cancelOrder/' + id)
-                    .then((res) => {
-                        alert('주문을 취소했습니다.');
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    })
+            addList(idx){
+                if(this.orderDetail[idx].check){
+                    this.orderDetail[idx].check = false;
+                }else{
+                    this.orderDetail[idx].check = true;
                 }
+                this.$forceUpdate();
             },
+            calRefundTotal(){
+                var qty= 0;
+                for(var i=0; i < this.orderDetail.length; i++){
+                    if(this.orderDetail[i].check === true){
+                        qty+=this.orderDetail[i].orderitem.qty
+                    }
+                }
+                return qty;
+            },
+            reqSuccess(id) {
+                var test = [];
+                var orderState ="";
+                for(var i=0; i < this.orderDetail.length; i++){
+                    if(this.orderDetail[i].check === true){
+                        test.push({orderItemId: this.orderDetail[i].orderitem.id, orderItemState: '반품완료'})
+                    }
+                }
+                
+                var postData = {
+                    orderItemList: test,
+                    orderId: id,
+                    orderState: "반품완료"
+                }
+
+                this.$http.put(baseurl + '/orderdetail', postData)
+                .then((res) => {
+                    if(res.data === true){
+                        alert('배송완료 처리되었습니다.');
+                        this.$router.push('/')
+                    }
+                })
+            },
+            
             closeModal(){
                     this.detailTotal=0;
                     this.detailQty=0;
                     this.orderDetail = "";
-            },
+            }
         },
         created() {
             console.log(this.styleColor[0]);

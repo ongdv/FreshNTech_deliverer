@@ -7,7 +7,7 @@
                         
                         v-on:click="getDetail(item.id)">
                             <div style="width:75%;height:100%;float:left;text-align:left;">
-                                <span style="width:65%;font-weight:bold;">반품금액 {{nwc(item.amount)}} 원</span>
+                                <span style="font-weight:bold">{{item.customerBname}}</span>
                                 <br>
                                 <span style="color:rgba(190,190,190,0.7);">반품 접수일 {{item.regdate}}</span>
                                 <br>
@@ -27,7 +27,7 @@
                             <div class="w-100 bg-light" style="margin-top:10px;">
                                 <b-list-group class="border-0">
                                     <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
-                                        {{item.regdate}}<br>
+                                        <span style="font-weight:bold">{{item.customerBname}}</span> <br>{{item.regdate}}<br>
                                         {{item.id}}
                                     </b-list-group-item>
                                     <b-list-group-item v-for="(detailItem, index) in orderDetail" v-bind:key="index">
@@ -42,8 +42,7 @@
                                                {{detailItem.orderitem.qty}}
                                            </div>
                                            <div style="width:35%;float:right;height:100%;text-align:right;">
-                                               {{nwc(detailItem.orderitem.price)}} 원<br>
-                                               <span style="font-weight:bold;">{{nwc(detailItem.orderitem.amount)}} 원</span>
+                                               <span style="font-weight:bold;">{{detailItem.orderitem.state}}</span>
                                            </div>
                                     </b-list-group-item>
                                     <b-list-group-item class="border-0 bg-light" style="font-weight:bold;">
@@ -52,8 +51,8 @@
                                             <span style="float:right;font-weight:bold;">{{nwc(detailQty)}} 개</span>
                                         </div>
                                         <div class="w-100">
-                                            <span style="width:65%;float:left;font-weight:bold;">총 상품금액</span>
-                                            <span style="float:right;font-weight:bold;font-size:1.2em;">{{nwc(detailTotal)}} 원</span>
+                                            <span style="width:65%;float:left;font-weight:bold;">총 반품수량</span>
+                                            <span style="float:right;font-weight:bold;font-size:1.2em;color:red">{{calRefundTotal()}} 개</span>
                                         </div>
                                     </b-list-group-item>
                                 </b-list-group>    
@@ -108,6 +107,15 @@
                 .catch((err) => {
                     console.log(err);
                 })
+            },
+            calRefundTotal(){
+                var qty= 0;
+                for(var i=0; i < this.orderDetail.length; i++){
+                    if(this.orderDetail[i].orderitem.state === "반품완료"){
+                        qty+=this.orderDetail[i].orderitem.qty
+                    }
+                }
+                return qty;
             },
             cancelOrder(id){
                 var a = confirm('주문을 정말 취소하시겠습니까?');

@@ -2,17 +2,16 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import {
   Main,
-  Order,
   OrderHistory,
   RefundHistory,
   Statistics,
   Setting,
-  Favorite,
   Auth,
-  AddGoods,
   AddFavorite,
   TodayDelivery,
-  TotalHistory
+  TotalHistory,
+  MapView,
+  Refund
 } from "../components/Layout/";
 import store from '../vuex/store';
 Vue.use(Router)
@@ -62,9 +61,9 @@ export default new Router({
       beforeEnter: requireAuth()
     },
     {
-      path: '/favorite',
-      name: 'Favorite',
-      component: Favorite,
+      path: '/refund',
+      name: 'Refund',
+      component: Refund,
       props: true,
       beforeEnter: requireAuth()
     },
@@ -83,9 +82,9 @@ export default new Router({
       beforeEnter: requireAuth()
     },
     {
-      path: '/addGoods',
-      name: 'AddGoods',
-      component: AddGoods,
+      path: '/mapView',
+      name: 'MapView',
+      component: MapView,
       props: true,
       beforeEnter: requireAuth()
     },

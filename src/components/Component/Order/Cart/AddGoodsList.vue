@@ -101,7 +101,7 @@
                     }
                 }
                 console.log(this.store.state.orderList);
-                this.$router.push('order')
+                this.$router.push('order');
             }
         },
     }
